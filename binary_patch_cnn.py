@@ -30,7 +30,7 @@ if args.mode == "train":
         epoch_num += 1
         epochs_since_anneal += 1
         epochs_since_improvement += 1
-        total_val_loss, total_val_accuracy = 0.0, 0.0
+        total_val_accuracy = 0.0
         anneal_lr_accuracy_change = 0.0
 
         #train
@@ -67,8 +67,7 @@ if args.mode == "train":
 
         print("Epoch %d Val Accuracy: %.4f" % (epoch_num, avg_val_accuracy), file=log_file)
         print("%d Epochs Val Accuracy Change: %.4f" % (args.anneal_lr_epochs, anneal_lr_accuracy_change), file=log_file)
-        classifier.anneal_lr(log_file=log_file)
-        
+
         #early stopping
         if epochs_since_improvement >= args.early_stopping_epochs and anneal_num >= args.min_num_anneals \
                 and avg_val_accuracy < (best_val_accuracy + args.early_stopping_threshold):
@@ -95,7 +94,7 @@ else:
         )
 
     classifier.eval()
-    total_top1, total_top5, total_loss = 0.0, 0.0, 0.0
+    total_top1 = 0.0
 
     if args.use_cuda:
         classifier.cuda(device_id=args.device_id)
