@@ -51,7 +51,7 @@ class PatchCNN():
         if self.args.use_cuda:
             self.model.cpu()
 
-        save(self.model.state_dict(), "%s/patch_weights.pth" % self.args.out_folder)
+        save(self.model.state_dict(), "%s/%s.pth" % (self.args.out_folder, self.args.weights_file))
 
         if self.args.use_cuda:
             self.model.cuda(device_id=self.args.device_id)
