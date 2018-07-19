@@ -48,13 +48,9 @@ if args.mode == "train":
 
         classifier.eval()
 
-        for patch, target in val_loader:
-            if args.use_cuda:
-                patch = patch.cuda(device_id=args.device_id)
-                target = target.cuda(device_id=args.device_id)
-
-            pred = classifier.classify(patch)
-            batch_results = helpers.get_topk_accuracies(pred, target, top_k=(1,))
+        for patches, targets in val_loader:
+            preds = classifier.classify(patches)
+            batch_results = helpers.get_topk_accuracies(preds, targets, top_k=(1,))
             total_val_accuracy += batch_results[0]
 
         avg_val_accuracy = total_val_accuracy / len(val_loader)
@@ -90,22 +86,16 @@ if args.mode == "train":
 else:
     test_loader = DataLoader(
             data.BinaryPatchDataset(args, "test"),
-            shuffle=True
+            shuffle=True,
+            batch_size=args.batch_size
         )
 
     classifier.eval()
     total_top1 = 0.0
 
-    if args.use_cuda:
-        classifier.cuda(device_id=args.device_id)
-
-    for img, target in test_loader:
-        if args.use_cuda:
-            img = img.cuda(device_id=args.device_id)
-            target = target.cuda(device_id=args.device_id)
-
-        pred = classifier(img)
-        batch_results = helpers.get_topk_accuracies(pred, target, top_k=(1,))
+    for patches, targets in test_loader:
+        preds = classifier.classify(patches)
+        batch_results = helpers.get_topk_accuracies(preds, targets, top_k=(1,))
         total_top1 += batch_results[0]
 
     print("Top 1 Accuracy: %.4f" % (total_top1 / len(test_loader)), file=log_file)
