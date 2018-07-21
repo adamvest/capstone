@@ -11,13 +11,20 @@ if args.use_cuda:
     classifier.to_cuda()
 
 if args.mode == "train":
+    if args.num_classes > 2:
+        train_dataset = data.MulticlassPatchDataset(args, "train")
+        val_dataset = data.MulticlassPatchDataset(args, "val")
+    else:
+        train_dataset = data.BinaryPatchDataset(args, "train")
+        val_dataset = data.BinaryPatchDataset(args, "val")
+
     train_loader = DataLoader(
-            data.BinaryPatchDataset(args, "train"),
+            train_dataset,
             shuffle=True,
             batch_size=args.batch_size
         )
     val_loader = DataLoader(
-            data.BinaryPatchDataset(args, "val"),
+            val_dataset,
             shuffle=True,
             batch_size=args.batch_size
         )
@@ -84,8 +91,13 @@ if args.mode == "train":
             anneal_num += 1
             classifier.anneal_lr(log_file=log_file)
 else:
+    if args.num_classes > 2:
+        test_dataset = data.MulticlassPatchDataset(args, "test")
+    else:
+        test_dataset = data.BinaryPatchDataset(args, "test")
+
     test_loader = DataLoader(
-            data.BinaryPatchDataset(args, "test"),
+            test_dataset,
             shuffle=True,
             batch_size=args.batch_size
         )
