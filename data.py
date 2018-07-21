@@ -55,9 +55,9 @@ class MulticlassPatchDataset(Dataset):
         for base in file_list:
             base = base.strip()
             mask_base = base
+            fname, ext = base.split(".")
 
-            if not base.isdigit():
-                fname, ext = base.split(".")
+            if not fname.isdigit():
                 base = fname + "_cropped." + ext
                 mask_base = fname + "_cropped_types." + ext
 
