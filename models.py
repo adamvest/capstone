@@ -6,7 +6,7 @@ from torch import nn, load, save, optim
 class PatchCNN():
     def __init__(self, args):
         self.args = args
-        self.model = Patch_Classifier(args)
+        self.model = Patch_Classifier(args.num_classes)
 
         if args.weights == "":
             self.model.apply(helpers.weights_init)
@@ -71,7 +71,7 @@ class PatchCNN():
 
 #classifier network definition
 class Patch_Classifier(nn.Module):
-    def __init__(self, args):
+    def __init__(self, num_classes):
         super(Patch_Classifier, self).__init__()
 
         conv_seq = [
@@ -81,7 +81,7 @@ class Patch_Classifier(nn.Module):
             ]
         linear_seq = [
                 nn.Linear(1600, 256), nn.BatchNorm1d(256), nn.PReLU(),
-                nn.Linear(256, args.num_classes)
+                nn.Linear(256, num_classes)
             ]
 
         self.feature_extractor = nn.Sequential(*conv_seq)
